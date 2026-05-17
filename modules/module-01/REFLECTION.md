@@ -24,7 +24,7 @@ Think about it from three angles: the developer who has to change code, the team
 
 > _Your answer:_
 
----
+---it makes the code easier to change as there are many different services like activity, auth , game, logging , notification and user , so a developer and work on each service without bereaking the other. it is much more responsibility and is more safer.
 
 ## 2. Your choice
 
@@ -36,7 +36,7 @@ What would break, slow down, or become harder to manage if you merged those two 
 
 > _Your answer:_
 
----
+--- autentication should be separated from user as they have different logics since aut has security  , mixing them together would make the service harder
 
 ## 3. The tradeoff
 
@@ -48,6 +48,6 @@ No need to solve it: just name it honestly. This is exactly the tension the rest
 
 > _Your answer:_
 
----
+--- i personaly think it was how we used sync REST and here we are using async REST  as in async it does multiple tasks and returns accepted and then later we debug the errors whereas in sync it was done immeditealy , microservices is more like client based so async is more prefered than sync for microservices
 
 _Keep this file. You will refer back to it during the oral presentation._

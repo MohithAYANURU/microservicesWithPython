@@ -29,8 +29,9 @@ For each bounded context you identify, fill in the table:
 | Bounded Context | Responsibilities                                         | Owned Entities | Team        |
 | --------------- | -------------------------------------------------------- | -------------- | ----------- |
 | Identity        | Manages who users are, handles registration and profiles | User, Session  | Platform    |
-| Game Library    | _(fill in)_                                              | _(fill in)_    | _(fill in)_ |
-| _(add more)_    |                                                          |                |             |
+| Game Library    | stores game information                                  |game,genre, recommendation    | _(fill in)_ |
+| Activity tracking    | records what users do in the game and tracks the activity                                                          |   activity,   playevent            |             |
+| Notification | user alerts and friend alerts | notification and delivery status |
 
 There is no single correct answer: what matters is that you can justify each row.
 
@@ -56,7 +57,9 @@ Payload: { activity_id, user_id, action, game_id, timestamp }
 
 Focus on the flows that feel non-obvious. You do not need to document every possible pair.
 
----
+--- auth-service -> activity-service
+    acticity-service -> logging-service
+
 
 ## Task 3 — Draw the service map _(~20 min)_
 
@@ -69,7 +72,7 @@ Draw the full GameHub service map:
 
 This can be a sketch on paper, a whiteboard photo, or ASCII art committed to your branch.
 
----
+---![alt text](image-1.png)
 
 ## Discussion _(~15 min)_
 
@@ -85,9 +88,9 @@ You do not need to write these answers down — they are warm-up for your REFLEC
 
 ## Minimum to submit this branch
 
-- [ ] Bounded context table filled in (at least 4 services justified)
-- [ ] At least 3 service contracts defined
-- [ ] Service map committed (sketch, photo, or ASCII)
-- [ ] `REFLECTION.md` completed and committed
+- [x] Bounded context table filled in (at least 4 services justified)
+- [x] At least 3 service contracts defined
+- [x] Service map committed (sketch, photo, or ASCII)
+- [x] `REFLECTION.md` completed and committed
 
 The map does not need to be perfect. It needs to be yours.
