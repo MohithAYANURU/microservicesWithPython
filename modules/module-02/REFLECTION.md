@@ -20,7 +20,7 @@ Think about what happens six months later when someone new joins the team, or wh
 
 > *Your answer:*
 
----
+---The main reason is that things are easier to fix. If everything is in one file, finding a bug means reading through everything. With separate layers, you know exactly where to look. 
 
 ## 2. Your choice
 
@@ -32,7 +32,7 @@ Give a concrete scenario, not a general principle.
 
 > *Your answer:*
 
----
+---Take the Game entity. game-service has rules about how game records get written — for example, always setting created_at correctly. If auth-service writes directly to the games table, it doesn't know those rules exist. It will insert a row without following them, and the data ends up wrong
 
 ## 3. The tradeoff
 
@@ -44,6 +44,6 @@ And at what point does the complexity start to pay off? Where is the tipping poi
 
 > *Your answer:*
 
----
+---There are five files for what is basically four SQL queries — the setup code is bigger than the actual logic. The cost is time: writing and navigating all that structure when the feature is tiny.
 
 *Keep this file. You will refer back to it during the oral presentation.*

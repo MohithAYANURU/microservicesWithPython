@@ -12,6 +12,15 @@ from app.database import Base, engine
 from app import models  # noqa: F401
 from app.routes import router
 
+
+
+
+
+
+
+
+
+
 app = FastAPI(title="game-service")
 app.include_router(router)
 
