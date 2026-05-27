@@ -20,7 +20,9 @@ Think about what the client would need to know and manage if it talked to each s
 
 > *Your answer:*
 
----
+---Without the gateway the client would need to know the port of every single service. And if you add a new service or move one you have to go update every client that talks to it which is a lot of work. With the gateway everyone just sends requests to port 8000 and they dont need to know anything else about whats running behind it.
+
+
 
 ## 2. Your choice
 
@@ -32,7 +34,7 @@ What is the consequence for the user in each case if the downstream service is u
 
 > *Your answer:*
 
----
+--- if the user doesnt exist then the activity shouldnt be saved at all because its just wrong data so that one has to fail. But the game info is just extra stuff we add to the response
 
 ## 3. The tradeoff
 
@@ -44,6 +46,6 @@ What happens to the user experience if the slowest service in the chain takes 3 
 
 > *Your answer:*
 
----
+---Everything has to wait for everything else so if one service is slow the whole request is slow. Like if user service takes 3 seconds then the user is already waiting 3 seconds before we even call game service.
 
 *Keep this file. You will refer back to it during the oral presentation.*
