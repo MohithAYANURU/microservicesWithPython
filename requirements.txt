@@ -1,0 +1,4 @@
+-r services/user-service/requirements.txt
+-r services/game-service/requirements.txt
+-r services/activity-service/requirements.txt
+-r services/gateway/requirements.txt
