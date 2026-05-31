@@ -48,7 +48,7 @@ frontend/*.local
 *.log 
 
 
-modules/module-04/*
+
 modules/module-05/*
 modules/module-06/*
 modules/module-07/*
