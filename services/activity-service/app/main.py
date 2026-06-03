@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import Base, engine, get_db
 from app.models import Activity
 from app.schemas import ActivityCreate, ActivityOut, ActivityList, GameSummary
+from app.infrastructure.rabbitmq_publisher import publish_activity_event
 
 Base.metadata.create_all(bind=engine)
 
@@ -74,6 +75,15 @@ async def create_activity(body: ActivityCreate, db: Session = Depends(get_db)):
     db.refresh(activity)
 
     game = await enrich_with_game(body.game_id)
+    #module 4 part A
+    game_title = game.title if game else None
+    await publish_activity_event(
+        user_id=activity.user_id,
+        game_id=activity.game_id,
+        action=activity.action,
+        game_title=game_title,
+    )
+    
     return ActivityOut(
         id=activity.id,
         user_id=activity.user_id,

@@ -64,13 +64,14 @@ After wiring it up, verify the full flow:
 
 1. Log an activity through the gateway:
 ```bash
-curl -X POST http://localhost:8000/v1/activities \
+curl -X POST http://localhost:8000/v1/activities \²
   -H "Content-Type: application/json" \
   -d '{"user_id": "YOUR_USER_ID", "game_id": "YOUR_GAME_ID", "action": "started"}'
 ```
 2. Open the RabbitMQ UI at http://localhost:15672 — go to the **Queues** tab and confirm messages appeared in `gamehub.notifications` and `gamehub.logs`
 3. Check the `notification-service` logs — a notification should appear
 
+![alt text](image.png)
 ---
 
 ## Part B — Register notification-service in the gateway *(~20 min)*
@@ -83,7 +84,7 @@ Verify:
 ```bash
 curl http://localhost:8000/v1/notifications
 ```
-
+![alt text](image-1.png)
 ---
 
 ## Discussion *(~15 min)*
@@ -96,6 +97,6 @@ curl http://localhost:8000/v1/notifications
 
 ## Minimum to submit this branch
 
-- [ ] Activity creation publishes a RabbitMQ message — visible in the management UI
-- [ ] `notification-service` registered in the gateway and reachable via port 8000
-- [ ] `REFLECTION.md` completed and committed
+- [x] Activity creation publishes a RabbitMQ message — visible in the management UI
+- [x] `notification-service` registered in the gateway and reachable via port 8000
+- [x] `REFLECTION.md` completed and committed
