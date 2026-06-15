@@ -1,5 +1,6 @@
+from jose import JWTError, jwt
 import httpx
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 
 from app.config import settings
 
@@ -11,6 +12,11 @@ ROUTES: dict[str, str] = {
     "activities": settings.activity_service_url,
     # Added in Module 4
     "notifications": settings.notification_service_url,
+    # Added in Module 5
+    "consent":       settings.logging_service_url,
+    "logs":          settings.logging_service_url,
+    # Added in Module 6
+    "auth":          settings.auth_service_url,
 }
 
 
@@ -27,11 +33,22 @@ async def proxy(request: Request, path: str):
         return Response(status_code=404, content="Not found")
 
     resource = segments[1]
+    is_public_auth_token = len(segments) >= 3 and resource == "auth" and segments[2] == "token"
 
     # Step 2 — look up the target service
     target_base = ROUTES.get(resource)
     if target_base is None:
         return Response(status_code=404, content=f"Unknown resource: {resource}")
+
+    if not is_public_auth_token:
+        auth_header = request.headers.get("authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        token = auth_header.removeprefix("Bearer ").strip()
+        try:
+            jwt.decode(token, settings.secret_key, algorithms=["HS256"])
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
 
     # Step 3 — forward the request
     target_url = f"{target_base}/{path}"

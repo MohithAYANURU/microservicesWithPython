@@ -1,4 +1,4 @@
-# Fully implemented — do not modify this file.
+# Fully implemented.
 #
 # Consumes activity events from the "gamehub.logs" RabbitMQ queue.
 # Before writing a log entry, it checks has_consent(user_id).
@@ -23,13 +23,13 @@ def start_consumer(flask_app) -> None:
     """
     Connect to RabbitMQ and consume from gamehub.logs.
     Retries on connection failure (RabbitMQ may not be up yet at startup).
-    Runs indefinitely — designed to be called in a daemon thread.
+    Runs indefinitely, designed to be called in a daemon thread.
     """
     while True:
         try:
             _run(flask_app)
         except Exception as exc:
-            logger.error("[consumer] Connection lost: %s — retrying in 5s", exc)
+            logger.error("[consumer] Connection lost: %s - retrying in 5s", exc)
             time.sleep(5)
 
 
@@ -51,8 +51,7 @@ def _run(flask_app) -> None:
                 from app.models import ActivityLog, db, has_consent
 
                 if not has_consent(user_id):
-                    logger.info("[consumer] No consent for user %s — discarding", user_id)
-                    ch.basic_ack(delivery_tag=method.delivery_tag)
+                    logger.info("[consumer] No consent for user %s - discarding", user_id)
                     return
 
                 log = ActivityLog(

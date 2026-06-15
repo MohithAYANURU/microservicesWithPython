@@ -8,7 +8,10 @@
 # - list_games(db, limit, offset) -> tuple[list[Game], int]
 # - search_games(db, q, limit, offset) -> tuple[list[Game], int]
 #   Hint: filter by title using .ilike(f"%{q}%") for case-insensitive search
+from redis import RedisError
 from sqlalchemy.orm import Session
+
+from app.infrastructure.cache import delete_game_summary, set_game_summary
 from app.models import Game
 from app.schemas import GameCreate
 
@@ -24,11 +27,37 @@ def create_game(db: Session, data: GameCreate) -> Game:
     db.add(game)
     db.commit()
     db.refresh(game)
+    try:
+        set_game_summary(
+            game.id,
+            {
+                "id": game.id,
+                "title": game.title,
+                "genre": game.genre,
+                "platform": game.platform,
+            },
+        )
+    except RedisError:
+        pass
     return game
 
 
 def get_game(db: Session, game_id: str) -> Game | None:
     return db.query(Game).filter(Game.id == game_id).first()
+
+
+def delete_game(db: Session, game_id: str) -> bool:
+    game = db.query(Game).filter(Game.id == game_id).first()
+    if game is None:
+        return False
+
+    db.delete(game)
+    db.commit()
+    try:
+        delete_game_summary(game_id)
+    except RedisError:
+        pass
+    return True
 
 
 def list_games(db: Session, limit: int = 20, offset: int = 0) -> tuple[list[Game], int]:

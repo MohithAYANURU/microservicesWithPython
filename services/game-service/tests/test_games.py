@@ -3,6 +3,7 @@ import sys
 
 import pytest
 from fastapi.testclient import TestClient
+from jose import jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -12,6 +13,7 @@ if str(SERVICE_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVICE_ROOT))
 
 from app.database import Base, get_db  # noqa: E402
+from app.config import settings  # noqa: E402
 from app.main import app  # noqa: E402
 
 
@@ -138,3 +140,35 @@ def test_health_returns_service_status(client: TestClient):
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "service": "game-service"}
+
+
+def test_delete_game_requires_admin_role(client: TestClient):
+    created = client.post(
+        "/v1/games/",
+        json={"title": "Inside", "genre": "platformer", "platform": "PC"},
+    ).json()
+
+    gamer_token = jwt.encode(
+        {"sub": "testuser", "role": "gamer"},
+        settings.auth_secret_key,
+        algorithm="HS256",
+    )
+    admin_token = jwt.encode(
+        {"sub": "admin", "role": "admin"},
+        settings.auth_secret_key,
+        algorithm="HS256",
+    )
+
+    forbidden = client.delete(
+        f"/v1/games/{created['id']}",
+        headers={"Authorization": f"Bearer {gamer_token}"},
+    )
+    assert forbidden.status_code == 403
+    assert forbidden.json() == {"detail": "Admin role required"}
+
+    allowed = client.delete(
+        f"/v1/games/{created['id']}",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert allowed.status_code == 200
+    assert allowed.json() == {"detail": "Game deleted"}

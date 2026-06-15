@@ -18,7 +18,7 @@ The game-service now has two models for the same data: SQLite for writes, Redis 
 
 Think about what kind of queries each model is optimised for, and what would happen if you tried to use the write model for high-traffic read operations.
 
-> *Your answer:*
+CQRS makes sense here because writing and reading are not the same job. SQLite keeps the full game data, and Redis keeps a smaller version that is faster to read. If every summary had to hit SQLite, it would be slower for no real reason.
 
 ---
 
@@ -30,7 +30,7 @@ The logging-service checks GDPR consent before recording any activity. If a user
 
 From a system design perspective: where is the right place to enforce this rule — in the logging-service, in the activity-service, or at the gateway? Why?
 
-> *Your answer:*
+The consent check means the logs will not always have everything in them. Some events happen, but the service is not allowed to save them if the user did not agree. I think this should stay in logging-service because that is the place where the data gets stored. The gateway should just pass requests along, and activity-service should only send the activity.
 
 ---
 
@@ -42,7 +42,7 @@ With CQRS, your write model and read model can drift out of sync — a game is u
 
 Is there a class of applications where eventual consistency is never acceptable? What are they?
 
-> *Your answer:*
+It matters if the user is seeing old data and makes a bad choice because of it, like an outdated game title or platform. It is fine for small delays in summary pages where nothing serious happens. I do not think eventual consistency works for things like payments, medical records, or account security because those need to be correct right away.
 
 ---
 

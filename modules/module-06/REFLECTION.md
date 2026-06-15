@@ -1,6 +1,6 @@
 # Module 6 — Reflection
 
-**Team name**: _______________
+**Team name**: MohithAYANURU
 **Branch**: `module-06/<team-name>`
 **Submitted**: before Module 7 lesson
 
@@ -18,7 +18,9 @@ The gateway now validates every JWT before forwarding a request. Individual serv
 
 Think about what happens when you need to rotate the secret key, or add a new service to the system.
 
-> *Your answer:*
+Centralising authentication at the gateway means every request is checked before it reaches the internal services. The services do not all need to repeat the same basic token validation logic, and adding a new service becomes simpler because the gateway already handles the front door.
+
+If every service validated tokens by itself, we would have to copy the same JWT code and config everywhere. Rotating the secret key would also be harder because every service would need to be updated correctly. The gateway gives us one consistent place to reject missing, expired, or fake tokens.
 
 ---
 
@@ -30,7 +32,9 @@ When activity-service calls user-service internally, it uses a Machine-to-Machin
 
 What would break, or what door would you accidentally leave open, if services passed user tokens between themselves?
 
-> *Your answer:*
+The user's token represents what that user is allowed to do. An internal call from activity-service to user-service is different: the service is doing backend validation as part of its own workflow, not asking to borrow the user's identity.
+
+If services passed user tokens around, the user's authority could accidentally spread further than intended. A downstream service might treat the call as a direct user action even though it came from another service. Using an M2M token makes the caller clear: this request is from activity-service, with service-level permissions, not from a normal gamer or admin.
 
 ---
 
@@ -42,7 +46,9 @@ The gateway and the auth-service share the same `SECRET_KEY` to verify tokens wi
 
 And what would the alternative look like — verifying tokens by calling auth-service on every request instead? What does that cost you?
 
-> *Your answer:*
+The risk is that the shared `SECRET_KEY` becomes a very powerful secret. If it leaks, someone could create fake JWTs and make the gateway or services believe they are a real user, an admin, or even a trusted service. That would break the whole trust model.
+
+The alternative is for the gateway to call auth-service on every request to verify the token. That avoids sharing the signing secret with more services, but it makes auth-service a dependency for every request. If auth-service is slow or down, the whole platform becomes slow or locked out. Local verification is faster and more resilient, but it means key management has to be taken seriously.
 
 ---
 
